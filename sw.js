@@ -1,6 +1,6 @@
 /* Kelime Kartları — çevrimdışı çalışma
    Sayfa ve simgeler telefonda saklanır; internet yoksa kayıtlı kopya açılır. */
-const CACHE = 'kelimeler-v3';
+const CACHE = 'kelimeler-v4';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

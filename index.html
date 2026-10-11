@@ -197,7 +197,7 @@ button.row:active,label.row:active{background:var(--fill)}
 .opt-desc{font-size:13px;color:var(--text2);margin:8px 6px 0;line-height:1.4}
 
 /* uyarı kutusu */
-.alert-wrap{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:var(--dim);opacity:0;transition:opacity .2s;padding:24px}
+.alert-wrap{position:fixed;inset:0;z-index:400;display:grid;place-items:center;background:var(--dim);opacity:0;transition:opacity .2s;padding:24px}
 .alert-wrap.open{opacity:1}
 .alert{width:min(310px,100%);border-radius:34px;padding:22px 18px 16px;text-align:center;transform:scale(1.08);transition:transform .35s var(--spring);background:var(--sheet)}
 .alert-wrap.open .alert{transform:none}
@@ -506,6 +506,30 @@ textarea.inp{overflow:hidden;min-height:38px}
 .howto b{color:var(--text)}
 .about{text-align:center;font-size:13px;color:var(--text3);margin-top:28px}
 
+/* ---------- uygulama kilidi ---------- */
+.lock{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:calc(var(--safe-t) + 24px) 24px calc(var(--safe-b) + 24px);background:var(--bg);transition:opacity .3s}
+.lock.out{opacity:0;pointer-events:none}
+.shield{position:fixed;inset:0;z-index:299;background:var(--bg);display:grid;place-items:center}
+.pin-wrap{display:flex;flex-direction:column;align-items:center;gap:38px}
+.lock-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.lock-ic{width:64px;height:64px;border-radius:22px;background:var(--accent);color:#fff;display:grid;place-items:center;margin-bottom:6px}
+.lock-ic .ic{width:30px;height:30px}
+.lock-head h2{font-size:22px;font-weight:700}
+.lock-head .pin-sub{color:var(--text2);font-size:15px;min-height:20px}
+.pin-dots{display:flex;gap:18px;margin-top:12px}
+.pin-dots i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--text2);transition:background .15s,transform .2s var(--spring)}
+.pin-dots i.on{background:var(--text);border-color:var(--text);transform:scale(1.1)}
+.pin-dots.shake{animation:shake .45s}
+.keypad{display:grid;grid-template-columns:repeat(3,78px);gap:16px 26px;justify-content:center}
+.key{width:78px;height:78px;border-radius:50%;background:var(--fill);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:32px;line-height:1;text-align:center;transition:background .1s,transform .15s}
+.key small{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text2);margin-top:3px}
+.key:active{background:var(--fill2);transform:scale(.96)}
+.key.fn{background:none}
+.key.fn .ic{width:28px;height:28px}
+.lock-foot{font-size:15px;font-weight:600;color:var(--accent-text);padding:10px 14px}
+.pin-sheet{display:flex;flex-direction:column;align-items:center;gap:22px;padding:8px 0 10px}
+@media (max-height:700px){.pin-wrap{gap:22px}.keypad{grid-template-columns:repeat(3,68px);gap:12px 22px}.key{width:68px;height:68px;font-size:28px}}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
@@ -553,6 +577,8 @@ textarea.inp{overflow:hidden;min-height:38px}
   <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
   <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5.5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4.5M16 6h3a3 3 0 0 1-3 4.5M12 13.5V17M8.5 21h7M9.5 17h5v4h-5z"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2.5h4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-del" viewBox="0 0 24 24"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6-7z"/><path d="m12.5 9.5 5 5M17.5 9.5l-5 5"/></symbol>
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 9a4.8 4.8 0 0 1-.5 9.5z"/></symbol>
 </svg>
 
@@ -929,6 +955,13 @@ function settingsScreen(){
         <button class="row" id="try-voice"><span class="grow acc">Sesi dene</span>${ic('speaker')}</button>
       </div>
       <p class="foot">Daha doğal bir ses için iPhone’da Ayarlar › Erişilebilirlik › Seslendirilen İçerik › Sesler › İngilizce bölümünden “Gelişmiş” bir ses indirip burada seçebilirsin.</p>
+      <div class="sh">Gizlilik</div>
+      <div class="group">
+        ${swRow('lock-on','Uygulama kilidi',Lock.enabled(),'Açılışta 4 haneli PIN sorar')}
+        ${Lock.enabled()?`<div class="row"><label class="grow" for="lock-delay">Kilitleme zamanı</label><select id="lock-delay">${[[0,'Hemen'],[60,'1 dakika sonra'],[300,'5 dakika sonra'],[900,'15 dakika sonra']].map(([v,l])=>`<option value="${v}" ${v===(S.prefs.lock.delay??60)?'selected':''}>${l}</option>`).join('')}</select></div>
+        <button class="row" id="lock-change"><span class="grow acc">PIN’i değiştir</span>${ic('lock')}</button>`:''}
+      </div>
+      <p class="foot">Kelimelerin yalnızca bu cihazda saklanır; internete ya da GitHub’a hiçbir zaman gönderilmez. Bağlantıyı açan başka biri kendi boş uygulamasını görür, senin kelimelerini göremez. Kilit, telefonunu eline alan birinin uygulamayı açmasını engeller.</p>
       <div class="sh">Verilerin</div>
       <div class="group">
         <div class="row"><span class="grow">Kayıt yeri</span><span class="val">${Sync.on?'Hesabın (cihazlar arası)':NATIVE?'Bu iPhone':'Bu cihaz'}</span></div>
@@ -941,6 +974,10 @@ function settingsScreen(){
       ${NATIVE?'':`<div class="sh">iPhone’a uygulama gibi ekle</div>
       <div class="card howto">Safari’de bu sayfayı açıkken <b>Paylaş</b> düğmesine, ardından <b>Ana Ekrana Ekle</b>’ye dokun. Uygulama tam ekran açılır, kelimelerin cihazında kalır.</div>`}
       <div class="about">Kelime Kartları · Kartlar, Öğren, Test ve Eşleştir</div>`;
+    const lk=$('#lock-on',el);
+    lk.addEventListener('change',async()=>{const want=lk.checked;lk.checked=!want;if(await lockSetup(want?'new':'off'))render()});
+    const ld=$('#lock-delay',el);ld&&ld.addEventListener('change',()=>{S.prefs.lock.delay=+ld.value;touchMeta()});
+    const lc=$('#lock-change',el);lc&&lc.addEventListener('click',async()=>{if(await lockSetup('change'))render()});
     const rate=$('#rate',el),rv=$('#rate-v',el);
     rate.addEventListener('input',()=>{S.prefs.rate=+rate.value;rv.textContent=S.prefs.rate.toFixed(2)+'×'});
     rate.addEventListener('change',()=>touchMeta());
@@ -1857,7 +1894,94 @@ function offlineReady(){
     });
   }).catch(()=>{});
 }
+/* =========================================================
+   Uygulama kilidi — 4 haneli PIN, yalnızca bu cihazda saklanır
+   ========================================================= */
+async function pinHash(pin,salt){
+  const data=new TextEncoder().encode(salt+':'+pin);
+  try{if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',data);return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}}catch(e){}
+  let x=0x811c9dc5;for(const c of data){x^=c;x=Math.imul(x,16777619)>>>0}return'f'+x.toString(16);
+}
+async function pinCheck(pin){const L=S.prefs.lock;return!!(L&&L.hash)&&(await pinHash(pin,L.salt))===L.hash}
+async function pinSave(pin){const salt=uid();const delay=S.prefs.lock&&S.prefs.lock.delay!=null?S.prefs.lock.delay:60;S.prefs.lock={salt,hash:await pinHash(pin,salt),delay};touchMeta()}
+function pinPad({title,sub='',onDone}){
+  const AB='ABC DEF GHI JKL MNO PQRS TUV WXYZ'.split(' ');
+  const el=h(`<div class="pin-wrap"><div class="lock-head"><div class="lock-ic">${ic('lock')}</div><h2></h2><p class="pin-sub"></p><div class="pin-dots" aria-hidden="true">${'<i></i>'.repeat(4)}</div></div>
+    <div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key" data-k="${n}" aria-label="${n}">${n}<small>${n>1?AB[n-2]:'&nbsp;'}</small></button>`).join('')}<span></span><button class="key" data-k="0" aria-label="0">0</button><button class="key fn" data-del aria-label="Sil">${ic('del')}</button></div></div>`);
+  let val='',busy=false;const dots=$$('.pin-dots i',el),dw=$('.pin-dots',el),subEl=$('.pin-sub',el);
+  const paint=()=>dots.forEach((d,i)=>d.classList.toggle('on',i<val.length));
+  const api={el,
+    setText(t,s2){$('h2',el).textContent=t;if(s2!=null)subEl.textContent=s2},
+    reset(msg){val='';paint();if(msg!=null)subEl.textContent=msg},
+    error(msg){dw.classList.remove('shake');void dw.offsetWidth;dw.classList.add('shake');haptic(30);setTimeout(()=>api.reset(msg),350)},
+    press(k){
+      if(busy)return;
+      if(k==='del'){val=val.slice(0,-1);paint();return}
+      if(val.length>=4)return;val+=k;paint();haptic(4);
+      if(val.length===4){busy=true;const v=val;setTimeout(async()=>{try{await onDone(v,api)}finally{busy=false}},140)}
+    }};
+  api.setText(title,sub);
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-k],[data-del]');if(b)api.press(b.hasAttribute('data-del')?'del':b.dataset.k)});
+  return api;
+}
+const Lock={shown:false,hiddenAt:0,key:null,
+  enabled(){return!!(S.prefs.lock&&S.prefs.lock.hash)},
+  show(){
+    if(this.shown||!this.enabled())return;this.shown=true;TTS.stop();
+    const sh=$('#shield');if(sh)sh.remove();
+    const pad=pinPad({title:'Kelimeler kilitli',sub:'PIN kodunu gir',onDone:async(v,api)=>{if(await pinCheck(v))this.hide();else api.error('Yanlış PIN, tekrar dene')}});
+    const w=h('<div class="lock" id="lock" role="dialog" aria-modal="true" aria-label="Uygulama kilidi"></div>');
+    w.appendChild(pad.el);
+    const forgot=h('<button class="lock-foot">PIN’i unuttum</button>');w.appendChild(forgot);
+    forgot.addEventListener('click',async()=>{
+      if(!await ask({title:'PIN’i mi unuttun?',msg:'PIN olmadan kilit açılamaz. Kilidi kaldırmak için bu cihazdaki tüm setlerin ve ilerlemen silinir. Daha önce yedek aldıysan sonra Ayarlar’dan geri yükleyebilirsin.',ok:'Sil ve kilidi kaldır',danger:true}))return;
+      for(const id of[...S.order])removeSet(id);S.days={};S.prefs.lastSet=null;S.prefs.lock=null;touchMeta();this.hide();refreshVisible();toast('Kilit kaldırıldı, veriler silindi');
+    });
+    this.key=e=>{if($('.alert-wrap'))return;if(/^[0-9]$/.test(e.key))pad.press(e.key);else if(e.key==='Backspace')pad.press('del')};
+    document.addEventListener('keydown',this.key);
+    $('#app').appendChild(w);
+  },
+  hide(){const w=$('#lock');if(w){w.classList.add('out');setTimeout(()=>w.remove(),320)}this.shown=false;if(this.key)document.removeEventListener('keydown',this.key)},
+  init(){
+    if(this.enabled())this.show();
+    document.addEventListener('visibilitychange',()=>{
+      if(!this.enabled())return;
+      if(document.visibilityState==='hidden'){
+        this.hiddenAt=now();TTS.stop();
+        // uygulama değiştiricideki önizlemede kelimeler görünmesin
+        if(!this.shown&&!$('#shield'))$('#app').appendChild(h(`<div class="shield" id="shield"><div class="lock-ic">${ic('lock')}</div></div>`));
+      }else{
+        const delay=(S.prefs.lock.delay!=null?S.prefs.lock.delay:60)*1000;
+        if(!this.shown&&now()-this.hiddenAt>=delay)this.show();
+        else{const sh=$('#shield');if(sh)sh.remove()}
+      }
+    });
+  }
+};
+function lockSetup(mode){ // 'new' | 'change' | 'off'
+  return new Promise(res=>{
+    const T={verify:'Mevcut PIN’i gir',enter:'Yeni PIN belirle',confirm:'PIN’i tekrar gir'};
+    let step=mode==='new'?'enter':'verify',first='',done=false,s=null;
+    const finish=msg=>{done=true;s&&s.close();toast(msg);res(true)};
+    const pad=pinPad({title:T[step],sub:step==='enter'?'4 haneli bir kod seç':'',onDone:async(v,api)=>{
+      if(step==='verify'){
+        if(!await pinCheck(v)){api.error('Yanlış PIN');return}
+        if(mode==='off'){S.prefs.lock=null;touchMeta();finish('Uygulama kilidi kapatıldı');return}
+        step='enter';api.setText(T.enter,'4 haneli bir kod seç');api.reset();return;
+      }
+      if(step==='enter'){first=v;step='confirm';api.setText(T.confirm,'Aynı kodu bir kez daha gir');api.reset();return}
+      if(v!==first){step='enter';first='';api.setText(T.enter,'');api.error('Kodlar eşleşmedi, baştan dene');return}
+      await pinSave(v);finish(mode==='new'?'Uygulama kilidi açıldı':'PIN değiştirildi');
+    }});
+    const wrap=h('<div class="pin-sheet"></div>');wrap.appendChild(pad.el);
+    if(mode==='new')wrap.appendChild(h('<p class="foot" style="text-align:center;margin:0 8px">PIN’i unutursan kilidi açmak için bu cihazdaki kelimelerin silinmesi gerekir. Ayarlar’dan ara sıra yedek al.</p>'));
+    const key=e=>{if($('.alert-wrap'))return;if(/^[0-9]$/.test(e.key))pad.press(e.key);else if(e.key==='Backspace')pad.press('del')};
+    document.addEventListener('keydown',key);
+    s=sheet({title:mode==='new'?'Uygulama kilidi':mode==='off'?'Kilidi kapat':'PIN’i değiştir',body:wrap,full:true,onClose:()=>{document.removeEventListener('keydown',key);if(!done)res(false)}});
+  });
+}
 function boot(){
+  Lock.init();
   TTS.init();
   Nav.roots={home:homeScreen(),library:libraryScreen(),settings:settingsScreen()};
   for(const k in Nav.roots)$('#stack').appendChild(Nav.roots[k].el);
