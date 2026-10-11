@@ -1,6 +1,6 @@
 /* Kelime Kartları — çevrimdışı çalışma
    Sayfa ve simgeler telefonda saklanır; internet yoksa kayıtlı kopya açılır. */
-const CACHE = 'kelimeler-v4';
+const CACHE = 'kelimeler-v5';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -18,13 +18,15 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || !req.url.startsWith(self.location.origin)) return;
-  // Sayfanın kendisi: önce internetten güncelini dene, yoksa kayıtlı kopyayı aç.
+  // Sayfanın kendisi: önce internetten güncelini dene. İnternet yoksa ya da sunucu
+  // hata verirse (404, 500…) telefondaki kayıtlı kopyayı aç; kelimeler zaten cihazda.
   if (req.mode === 'navigate' || req.destination === 'document') {
+    const cached = () => caches.match('./index.html', { ignoreSearch: true });
     e.respondWith(
       fetch(req).then(res => {
-        if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); }
-        return res;
-      }).catch(() => caches.match('./index.html', { ignoreSearch: true }))
+        if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return res; }
+        return cached().then(hit => hit || res);
+      }).catch(cached)
     );
     return;
   }
